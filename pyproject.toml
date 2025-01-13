@@ -2,12 +2,14 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[project]
+# [project]
+[tool.poetry]
 name = "pytibrv"
 version = "0.1.0"
 description = "TIBRV Python bindings"
-authors = [
-    { name = "Arien Chen", email = "arienchen@example.com" }
-]
+authors = ["Arien Chen <arienchen@example.com>"]
 license = "MIT"
-dependencies = []
+
+[tool.poetry.dependencies]
+python = ">=3.6"
+
