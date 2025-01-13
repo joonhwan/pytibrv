@@ -84,8 +84,8 @@ class TransportTest(unittest.TestCase):
         self.assertEqual(TIBRV_OK, status, tibrvStatus_GetText(status))
         self.assertIsNotNone(subj)
 
-        status = tibrvTransport_RequestReliability(tx, 100)
-        self.assertEqual(TIBRV_OK, status, tibrvStatus_GetText(status))
+        # status = tibrvTransport_RequestReliability(tx, 100)
+        # self.assertEqual(TIBRV_OK, status, tibrvStatus_GetText(status))
 
         status = tibrvTransport_Destroy(tx)
         self.assertEqual(TIBRV_OK, status, tibrvStatus_GetText(status))

@@ -214,16 +214,16 @@ from .msg import tibrvMsg, tibrvMsgDateTime, tibrvMsgField, \
                  tibrvMsg_AddI8Array, tibrvMsg_AddU8Array, tibrvMsg_AddI16Array, \
                  tibrvMsg_AddU16Array, tibrvMsg_AddI32Array, tibrvMsg_AddU32Array, \
                  tibrvMsg_AddI64Array, tibrvMsg_AddU64Array, tibrvMsg_AddF32Array, \
-                 tibrvMsg_AddF64Array, tibrvMsg_AddStringArray, tibrvMsg_AddMsgArray, \
+                 tibrvMsg_AddF64Array, \
                  tibrvMsg_GetBool, tibrvMsg_GetString, tibrvMsg_GetSendSubject, \
-                 tibrvMsg_GetByteSize, tibrvMsg_GetClosure, tibrvMsg_GetCurrentTime, \
-                 tibrvMsg_GetCurrentTimeString, tibrvMsg_GetDateTime, tibrvMsg_GetEvent, \
+                 tibrvMsg_GetByteSize, tibrvMsg_GetCurrentTime, \
+                 tibrvMsg_GetCurrentTimeString, tibrvMsg_GetDateTime, \
                  tibrvMsg_GetF32, tibrvMsg_GetF32Array, tibrvMsg_GetF64, tibrvMsg_GetF64Array, \
                  tibrvMsg_GetField, tibrvMsg_GetFieldByIndex, tibrvMsg_GetFieldInstance, \
                  tibrvMsg_GetI8, tibrvMsg_GetI8Array, tibrvMsg_GetI16, tibrvMsg_GetI16Array, \
                  tibrvMsg_GetI32, tibrvMsg_GetI32Array, tibrvMsg_GetI64, tibrvMsg_GetI64Array, \
-                 tibrvMsg_GetMsg, tibrvMsg_GetMsgArray, tibrvMsg_GetNumFields, \
-                 tibrvMsg_GetReplySubject, tibrvMsg_GetStringArray, tibrvMsg_GetU8, \
+                 tibrvMsg_GetMsg, tibrvMsg_GetNumFields, \
+                 tibrvMsg_GetReplySubject, tibrvMsg_GetU8, \
                  tibrvMsg_GetU8Array, tibrvMsg_GetU16, tibrvMsg_GetU16Array, \
                  tibrvMsg_GetU32, tibrvMsg_GetU32Array, tibrvMsg_GetU64, tibrvMsg_GetU64Array, \
                  tibrvMsg_RemoveField, tibrvMsg_RemoveFieldInstance, tibrvMsg_SetReplySubject, \
@@ -232,8 +232,8 @@ from .msg import tibrvMsg, tibrvMsgDateTime, tibrvMsgField, \
                  tibrvMsg_UpdateF64Array, tibrvMsg_UpdateField, tibrvMsg_UpdateI8, \
                  tibrvMsg_UpdateI8Array, tibrvMsg_UpdateI16, tibrvMsg_UpdateI16Array, \
                  tibrvMsg_UpdateI32, tibrvMsg_UpdateI32Array, tibrvMsg_UpdateI64, \
-                 tibrvMsg_UpdateI64Array, tibrvMsg_UpdateMsg, tibrvMsg_UpdateMsgArray, \
-                 tibrvMsg_UpdateString, tibrvMsg_UpdateStringArray, tibrvMsg_UpdateU8, \
+                 tibrvMsg_UpdateI64Array, tibrvMsg_UpdateMsg, \
+                 tibrvMsg_UpdateString, tibrvMsg_UpdateU8, \
                  tibrvMsg_UpdateU8Array, tibrvMsg_UpdateU16, tibrvMsg_UpdateU16Array, \
                  tibrvMsg_UpdateU32, tibrvMsg_UpdateU32Array, tibrvMsg_UpdateU64, \
                  tibrvMsg_UpdateU64Array
@@ -674,7 +674,8 @@ class TibrvMsg:
             if type(value) is not list:
                 status = tibrvMsg_UpdateString(self.id(), name, value, id, codepage)
             else:
-                status = tibrvMsg_UpdateStringArray(self.id(), name, value, id, codepage)
+                # status = tibrvMsg_UpdateStringArray(self.id(), name, value, id, codepage)
+                raise NotImplementedError('NOT IMPLEMENTED UpdateStringArray')
 
         self._err = TibrvStatus.error(status)
         return status
@@ -696,7 +697,8 @@ class TibrvMsg:
                     return TIBRV_INVALID_ARG
                 msg.append(x.id())
 
-            status = tibrvMsg_UpdateMsgArray(self.id(), name, msg, id)
+            # status = tibrvMsg_UpdateMsgArray(self.id(), name, msg, id)
+            raise NotImplementedError('NOT IMPLEMENTED UpdateMsgArray')
 
         self._err = TibrvStatus.error(status)
         return status
@@ -1029,30 +1031,30 @@ class TibrvMsg:
         return self.__default(ret, status, kwargs)
 
 
-    def listStr(self, name: str, id: int = 0, codepage:str=None, **kwargs) -> list:
-        ret = None
-        if self.id() == 0:
-            status = TIBRV_INVALID_MSG
-        else:
-            status, ret = tibrvMsg_GetStringArray(self.id(), name, id, codepage)
+    # def listStr(self, name: str, id: int = 0, codepage:str=None, **kwargs) -> list:
+    #     ret = None
+    #     if self.id() == 0:
+    #         status = TIBRV_INVALID_MSG
+    #     else:
+    #         status, ret = tibrvMsg_GetStringArray(self.id(), name, id, codepage)
 
-        return self.__default(ret, status, kwargs)
+    #     return self.__default(ret, status, kwargs)
 
 
-    def listMsg(self, name: str, id: int = 0, **kwargs) -> list:
+    # def listMsg(self, name: str, id: int = 0, **kwargs) -> list:
 
-        ret = None
-        if self.id() == 0:
-            status = TIBRV_INVALID_MSG
-        else:
-            status, msg = tibrvMsg_GetMsgArray(self.id(), name, id)
+    #     ret = None
+    #     if self.id() == 0:
+    #         status = TIBRV_INVALID_MSG
+    #     else:
+    #         status, msg = tibrvMsg_GetMsgArray(self.id(), name, id)
 
-            if status == TIBRV_OK:
-                ret = []
-                for x in msg:
-                    ret.append(TibrvMsg(x))
+    #         if status == TIBRV_OK:
+    #             ret = []
+    #             for x in msg:
+    #                 ret.append(TibrvMsg(x))
 
-        return self.__default(ret, status, kwargs)
+    #     return self.__default(ret, status, kwargs)
 
 
     def add(self,  data_type, name:str, id: int = 0, **kwargs):
@@ -1340,6 +1342,7 @@ class TibrvMsg:
         self._err = TibrvStatus.error(status)
         return
 
+    @property
     def error(self) -> TibrvError:
         return self._err
 
@@ -1352,8 +1355,7 @@ from .queue import tibrvQueue,  \
                    tibrvQueue_Dispatch, tibrvQueue_GetCount, tibrvQueue_GetName, \
                    tibrvQueue_GetLimitPolicy, tibrvQueue_GetPriority, \
                    tibrvQueue_Poll, tibrvQueue_SetLimitPolicy, tibrvQueue_SetName, \
-                   tibrvQueue_SetPriority, tibrvQueue_TimedDispatch, \
-                   tibrvQueue_TimedDispatchOneEvent
+                   tibrvQueue_SetPriority, tibrvQueue_TimedDispatch
 
 
 class TibrvQueue:
@@ -1434,6 +1436,7 @@ class TibrvQueue:
 
         return status
 
+    @property
     def count(self) -> int:
 
         status, ret = tibrvQueue_GetCount(self.id())
@@ -1501,7 +1504,7 @@ class TibrvQueue:
 from .tport import tibrvTransport, tibrvTransport_Create, tibrvTransport_Destroy, \
                    tibrvTransport_CreateInbox, tibrvTransport_GetService, \
                    tibrvTransport_GetDaemon, tibrvTransport_GetNetwork, tibrvTransport_GetDescription, \
-                   tibrvTransport_RequestReliability, tibrvTransport_SetDescription, \
+                   tibrvTransport_SetDescription, \
                    tibrvTransport_Send, tibrvTransport_SendRequest, tibrvTransport_SendReply
 
 class TibrvTx :
@@ -1575,12 +1578,12 @@ class TibrvTx :
 
         return ret
 
-    def reliability(self, reliability: float) -> int:
+    # def reliability(self, reliability: float) -> int:
 
-        status = tibrvTransport_RequestReliability(self.id(), reliability)
-        self._err = TibrvStatus.error(status)
+    #     status = tibrvTransport_RequestReliability(self.id(), reliability)
+    #     self._err = TibrvStatus.error(status)
 
-        return status
+    #     return status
 
     def error(self) -> TibrvError :
         return self._err
@@ -1649,7 +1652,7 @@ class TibrvTx :
 ##-----------------------------------------------------------------------------
 from .events import tibrvEvent, tibrvClosure,  \
                     tibrvEvent_CreateTimer, tibrvEvent_CreateListener, \
-                    tibrvEvent_CreateVectorListener, tibrvEvent_Destroy, \
+                    tibrvEvent_Destroy, \
                     tibrvEvent_GetType, tibrvEvent_ResetTimerInterval, \
                     tibrvEvent_GetTimerInterval, tibrvEvent_GetQueue, \
                     tibrvEvent_GetListenerSubject, tibrvEvent_GetListenerTransport
@@ -1845,7 +1848,7 @@ class TibrvListener(TibrvEvent):
 ## TibrvDispatcher
 ##-----------------------------------------------------------------------------
 from .disp import tibrvDispatcher, \
-                  tibrvDispatcher_Create, tibrvDispatcher_Destroy, tibrvDispatcher_Join, \
+                  tibrvDispatcher_Create, tibrvDispatcher_Destroy, \
                   tibrvDispatcher_GetName, tibrvDispatcher_SetName
 
 class TibrvDispatcher :

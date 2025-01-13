@@ -7,8 +7,8 @@
 #
 import sys
 import getopt
-from pytibrv.tport import *
-from pytibrv.msg import *
+import time
+from pytibrv.Tibrv import *
 
 def usage():
     print('TIBRV Sender: tibrvsend.py')
@@ -46,12 +46,47 @@ def get_params(argv):
 
     return service, network, daemon, args[0], args[1]
 
+def callback(event, msg: TibrvMsg, closure):
+    print("RECV [{}] < {}".format(msg.sendSubject, str(msg)))
+    pass
+
+def watiForReply(tx, replySubject, timeout_sec):
+    try:
+        queue = TibrvQueue()
+        queue.create()
+        
+        listener = TibrvListener();
+        listener.create(queue, TibrvMsgCallback(callback), tx, replySubject, None)
+        
+        start_time = time.monotonic()
+        elapsed_sec = 0
+        while elapsed_sec < timeout_sec:
+            if queue.count > 0:
+                return True
+            
+            time.sleep(0.5)
+            x = time.monotonic() - start_time
+            elapsed_sec += 0.5
+            
+        print("timeout!!!!")
+        return False
+    finally:
+        queue.destroy()
+        listener.destroy()
+        
+    
+
 # MAIN PROGRAM
 def main(argv):
 
     progname = argv[0]
 
-    service, network, daemon, subj, msg_data = get_params(argv[1:])
+    # service, network, daemon, subj, msg_data = get_params(argv[1:])
+    service = "8200"
+    network = "192.168.100.115"
+    daemon = "tcp:7500"
+    subj = "TEST.TOPIC"
+    msg_data = "TEST_MESSAGE"
 
     err = Tibrv.open()
     if err != TIBRV_OK:
@@ -67,7 +102,7 @@ def main(argv):
     tx.description = progname
 
     try:
-        msg = TibrvMsg()
+        msg = TibrvMsg.create(1024)
     except TibrvError as e:
         print('{}: Failed to create message: {}'.format('', progname, e.text(err)))
         sys.exit(1)
@@ -75,13 +110,16 @@ def main(argv):
     err = msg.setStr('DATA', msg_data)
     if err == TIBRV_OK:
         msg.sendSubject = subj
+        msg.replySubject = "REPLY.SUBJECT"
         if msg.error is None:
             err = tx.send(msg)
+            watiForReply(tx, "REPLY.SUBJECT", 10)
         else:
             err = msg.error.code()
 
     if err != TIBRV_OK:
         print('{}: {} in sending "{}" to "{}"'. format(progname, tibrvStatus_GetText(err), msg_data, subj))
+    
 
     del msg
     del tx

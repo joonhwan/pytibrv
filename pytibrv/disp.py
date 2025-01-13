@@ -69,24 +69,6 @@ def tibrvDispatcher_Create(dispatchable: tibrvDispatchable,
     return status, disp.value
 
 ##
-_rv.tibrvDispatcher_Join.argtypes = [_c_tibrvDispatcher]
-_rv.tibrvDispatcher_Join.restype = _c_tibrv_status
-
-def tibrvDispatcher_Join(dispatcher: tibrvDispatcher) -> tibrv_status:
-
-    if dispatcher is None or dispatcher == 0:
-        return TIBRV_INVALID_DISPATCHER
-
-    try:
-        disp = _c_tibrvDispatcher(dispatcher)
-    except:
-        return TIBRV_INVALID_DISPATCHER
-
-    status = _rv.tibrvDispatcher_Join(disp)
-    return status
-
-
-##
 _rv.tibrvDispatcher_Destroy.argtypes = [_c_tibrvDispatcher]
 _rv.tibrvDispatcher_Destroy.restype = _c_tibrv_status
 

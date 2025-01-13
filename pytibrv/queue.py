@@ -122,34 +122,6 @@ def tibrvQueue_Poll(eventQueue: tibrvQueue) -> tibrv_status:
 
 
 ##
-_rv.tibrvQueue_TimedDispatchOneEvent.argtypes = [_c_tibrvQueue, _c_tibrv_f64]
-_rv.tibrvQueue_TimedDispatchOneEvent.restype = _c_tibrv_status
-
-
-def tibrvQueue_TimedDispatchOneEvent(eventQueue: tibrvQueue, waitTime: float) -> tibrv_status:
-
-    if eventQueue is None or eventQueue == 0:
-        return TIBRV_INVALID_QUEUE
-
-    if waitTime is None:
-        return TIBRV_INVALID_ARG
-
-    try:
-        que = _c_tibrvQueue(eventQueue)
-    except:
-        return TIBRV_INVALID_QUEUE
-
-    try:
-        t = _c_tibrv_f64(waitTime)
-    except:
-        return TIBRV_INVALID_ARG
-
-    status = _rv.tibrvQueue_TimedDispatchOneEvent(que, t)
-
-    return status
-
-
-##
 _rv.tibrvQueue_DestroyEx.argtypes = [_c_tibrvQueue, _ctypes.c_void_p, _ctypes.c_void_p]
 _rv.tibrvQueue_DestroyEx.restype = _c_tibrv_status
 

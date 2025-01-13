@@ -7,7 +7,7 @@
 #
 import sys
 import getopt
-from pytibrv.events import *
+from pytibrv.Tibrv import *
 
 def usage() :
     print()

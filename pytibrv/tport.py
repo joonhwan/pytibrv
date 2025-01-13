@@ -323,30 +323,4 @@ def tibrvTransport_GetDescription(transport: tibrvTransport) -> (tibrv_status, s
 
     return status, _pystr(sz)
 
-##
-_rv.tibrvTransport_RequestReliability.argtypes = [_c_tibrvTransport, _c_tibrv_f64]
-_rv.tibrvTransport_RequestReliability.restype = _c_tibrv_status
-
-def tibrvTransport_RequestReliability(transport: tibrvTransport, reliability: float) -> tibrv_status:
-
-    if transport is None or transport == 0:
-        return TIBRV_INVALID_TRANSPORT
-
-    if reliability is None:
-        return TIBRV_INVALID_ARG
-
-    try:
-        tx = _c_tibrvTransport(transport)
-    except:
-        return TIBRV_INVALID_TRANSPORT
-
-    try:
-        n = _c_tibrv_f64(reliability)
-    except:
-        return TIBRV_INVALID_ARG
-
-    status = _rv.tibrvTransport_RequestReliability(tx, n)
-
-    return status
-
 

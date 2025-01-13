@@ -212,62 +212,6 @@ def tibrvEvent_CreateListener(queue: tibrvQueue, callback: tibrvEventCallback, t
 
     return status, ev.value
 
-##
-_rv.tibrvEvent_CreateVectorListener.argtypes = [_ctypes.POINTER(_c_tibrvEvent),
-                                                _c_tibrvQueue,
-                                                _c_tibrvEventVectorCallback,
-                                                _c_tibrvTransport,
-                                                _c_tibrv_str,
-                                                _ctypes.py_object]
-_rv.tibrvEvent_CreateVectorListener.restype = _c_tibrv_status
-
-def tibrvEvent_CreateVectorListener(queue: tibrvQueue, callback: tibrvEventVectorCallback,
-                                    transport: tibrvTransport, subject: str,
-                                    closure = None)   -> (tibrv_status, tibrvEvent):
-
-    if queue is None or queue == 0:
-        return TIBRV_INVALID_QUEUE, None
-
-    if callback is None:
-        return TIBRV_INVALID_CALLBACK, None
-
-    if transport is None or transport == 0:
-        return TIBRV_INVALID_TRANSPORT, None
-
-    if str is None:
-        return TIBRV_INVALID_ARG, None
-
-    ev = _c_tibrvEvent(0)
-
-    try:
-        que = _c_tibrvQueue(queue)
-    except:
-        return TIBRV_INVALID_QUEUE, None
-
-    try:
-        cb = _c_tibrvEventVectorCallback(callback)
-    except:
-        return TIBRV_INVALID_CALLBACK, None
-
-    try:
-        tx = _c_tibrvTransport(transport)
-    except:
-        return TIBRV_INVALID_TRANSPORT, None
-
-    try:
-        subj = _cstr(subject)
-        cz = _ctypes.py_object(closure)
-    except:
-        return TIBRV_INVALID_ARG, None
-
-    status = _rv.tibrvEvent_CreateVectorListener(_ctypes.byref(ev), que, cb, tx, subj, cz)
-
-    # save cb to prevent GC
-    if status == TIBRV_OK:
-        __reg(ev.value, cb, cz)
-
-    return status, ev.value
-
 
 ##
 _rv.tibrvEvent_CreateTimer.argtypes = [_ctypes.POINTER(_c_tibrvEvent),
